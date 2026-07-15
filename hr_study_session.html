@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ディレクター採用施策の考え方 — HR勉強会</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0f1523;
+    --navy-mid: #1a2236;
+    --navy-light: #243050;
+    --accent: #f5a623;
+    --accent-dim: rgba(245,166,35,0.15);
+    --accent2: #4fc3f7;
+    --white: #f0f4ff;
+    --gray: #8a9bb5;
+    --red: #ff6b6b;
+    --green: #69db7c;
+    --text: #dde4f0;
+    --slide-w: 100vw;
+    --slide-h: 100vh;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    overflow: hidden;
+  }
+
+  /* ── SLIDES ── */
+  .deck { width: 100%; height: 100%; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    padding: 56px 72px 48px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .35s ease;
+  }
+  .slide.active { opacity: 1; pointer-events: all; }
+
+  /* ── PROGRESS BAR ── */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--navy-light);
+    z-index: 100;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent);
+    transition: width .4s ease;
+  }
+
+  /* ── STEP INDICATOR ── */
+  .step-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .slide-title {
+    font-size: clamp(28px, 3.5vw, 48px);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -.01em;
+    margin-bottom: 12px;
+  }
+  .slide-sub {
+    font-size: clamp(14px, 1.4vw, 18px);
+    font-weight: 300;
+    color: var(--gray);
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  /* ── CONTENT BLOCKS ── */
+  .cols { display: grid; gap: 24px; flex: 1; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-light);
+    border-radius: 12px;
+    padding: 28px 32px;
+  }
+  .card.accent-border { border-color: var(--accent); }
+  .card.red-border { border-color: var(--red); }
+  .card.green-border { border-color: var(--green); }
+  .card.blue-border { border-color: var(--accent2); }
+
+  .card-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 12px;
+  }
+  .card-label.accent { color: var(--accent); }
+  .card-label.red { color: var(--red); }
+  .card-label.green { color: var(--green); }
+  .card-label.blue { color: var(--accent2); }
+
+  .card-title {
+    font-size: clamp(16px, 1.6vw, 20px);
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.35;
+  }
+
+  ul.body-list { list-style: none; }
+  ul.body-list li {
+    font-size: clamp(13px, 1.2vw, 15px);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text);
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+  ul.body-list li::before {
+    content: '—';
+    position: absolute; left: 0;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-right: 6px; margin-bottom: 6px;
+  }
+  .tag-accent { background: var(--accent-dim); color: var(--accent); }
+  .tag-red { background: rgba(255,107,107,.12); color: var(--red); }
+  .tag-green { background: rgba(105,219,124,.12); color: var(--green); }
+  .tag-blue { background: rgba(79,195,247,.12); color: var(--accent2); }
+
+  /* ── FLOW DIAGRAM (slide 3) ── */
+  .flow {
+    display: flex; align-items: flex-start;
+    gap: 0; flex: 1;
+  }
+  .flow-step {
+    flex: 1; position: relative;
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-light);
+    border-radius: 10px;
+    padding: 20px 18px;
+    text-align: center;
+  }
+  .flow-step + .flow-step::before {
+    content: '→';
+    position: absolute; left: -18px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 18px;
+  }
+  .flow-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px; font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .flow-label {
+    font-size: 13px; font-weight: 500;
+    line-height: 1.4;
+  }
+  .flow-desc {
+    font-size: 11px; font-weight: 300;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: var(--accent-dim);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin-top: 20px;
+    font-size: clamp(13px, 1.2vw, 15px);
+    line-height: 1.7;
+    color: var(--white);
+  }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: clamp(12px, 1.1vw, 14px);
+  }
+  th {
+    background: var(--navy-light);
+    color: var(--accent);
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: 10px 16px; text-align: left;
+  }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--navy-light);
+    font-weight: 300; line-height: 1.55;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── LOOP DIAGRAM simplified ── */
+  .loop-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px; flex: 1;
+  }
+  .loop-node {
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-light);
+    border-radius: 10px;
+    padding: 18px 20px;
+    position: relative;
+  }
+  .loop-node.problem { border-color: var(--red); }
+  .loop-node.intervention { border-color: var(--green); }
+  .loop-node.gap { border-color: var(--accent2); }
+  .loop-node-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: var(--gray);
+    margin-bottom: 6px;
+  }
+  .loop-node-title {
+    font-size: 14px; font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+  .loop-node-sub {
+    font-size: 11px; font-weight: 300;
+    color: var(--gray); line-height: 1.5;
+  }
+  .arrow-note {
+    font-size: 11px; color: var(--accent);
+    text-align: center; padding: 4px 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed; bottom: 32px; right: 48px;
+    display: flex; align-items: center; gap: 16px;
+    z-index: 100;
+  }
+  .nav-btn {
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-light);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .nav-btn:hover { background: var(--navy-light); border-color: var(--accent); color: var(--accent); }
+  .nav-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; color: var(--gray);
+  }
+
+  /* ── SLIDE 1: COVER ── */
+  .cover {
+    justify-content: center;
+    background: radial-gradient(ellipse at 30% 50%, rgba(245,166,35,.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(79,195,247,.05) 0%, transparent 50%);
+  }
+  .cover-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 32px;
+  }
+  .cover-title {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 700; line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: 24px;
+  }
+  .cover-title span { color: var(--accent); }
+  .cover-desc {
+    font-size: clamp(14px, 1.5vw, 18px);
+    font-weight: 300; color: var(--gray);
+    line-height: 1.7; max-width: 600px;
+    margin-bottom: 48px;
+  }
+  .cover-meta {
+    display: flex; gap: 32px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; color: var(--gray);
+  }
+  .cover-meta strong { color: var(--text); font-weight: 500; }
+
+  /* ── BIG QUOTE ── */
+  .big-quote {
+    font-size: clamp(20px, 2.5vw, 32px);
+    font-weight: 700; line-height: 1.4;
+    color: var(--white);
+    border-left: 4px solid var(--accent);
+    padding-left: 28px;
+    margin: 24px 0;
+  }
+
+  /* ── NEXT ACTIONS ── */
+  .next-list { list-style: none; flex: 1; }
+  .next-list li {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--navy-light);
+    font-size: clamp(13px, 1.3vw, 16px);
+    line-height: 1.6;
+  }
+  .next-list li:last-child { border-bottom: none; }
+  .next-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--accent);
+    min-width: 28px;
+    padding-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="deck">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide cover active" data-slide="1">
+    <div class="cover-eyebrow">HR勉強会 — 人事施策の考え方 実践報告</div>
+    <h1 class="cover-title">ディレクター採用<span>減速</span>に<br>どう向き合うか</h1>
+    <p class="cover-desc">
+      浜岡範光『圧倒的成果を生む 人事施策の考え方』のフレームを使い、<br>
+      経営オーダーの背後にある本質課題を掘り下げた思考プロセスの報告。
+    </p>
+    <div class="cover-meta">
+      <div><strong>報告者</strong> 齋藤みのり（HR）</div>
+      <div><strong>対象職種</strong> ディレクター職</div>
+      <div><strong>フレーム</strong> 人事施策設計スキル（モードA）</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: 発端と制約 -->
+  <div class="slide" data-slide="2">
+    <div class="step-label">背景 — 発端と情報の限界</div>
+    <h2 class="slide-title">COOからのオーダーと、<br>HRが置かれた構造</h2>
+    <div class="cols cols-2" style="flex:1">
+      <div class="card accent-border">
+        <div class="card-label accent">COOからのオーダー</div>
+        <div class="card-title">「契約社員などで若手を<br>コストを抑えて採用せよ」</div>
+        <ul class="body-list" style="margin-top:12px">
+          <li>ジャストアイデアであり、実行可能性の検証はHRに委ねられている</li>
+          <li>背景には現場リーダーの採用消極化がある</li>
+          <li>経営陣・HRとしては年2〜3名の継続採用は必要と合意済み</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-label">HRが置かれた情報制約</div>
+        <div class="card-title">一次情報へのアクセスが<br>限られている</div>
+        <ul class="body-list" style="margin-top:12px">
+          <li>現場の議論が行われる経営戦略会議にHRは参加できない</li>
+          <li>入手できる情報はCOOを介した二次情報のみ</li>
+          <li>HRと現場リーダーの連携はCOO経由でしか機能していない</li>
+          <li>現場リーダーへの直接ヒアリングも未実施</li>
+        </ul>
+        <div class="highlight-box">
+          スキルの警告：「発注者が具体的オーダーを出してきても、その先の本質ゴールが明確とは限らない」
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: 思考プロセス -->
+  <div class="slide" data-slide="3">
+    <div class="step-label">フレーム — スキルを使った思考の流れ</div>
+    <h2 class="slide-title">「やることありき」を避けるための<br>4ステップ</h2>
+    <p class="slide-sub">スキルのモードA（立案支援）に沿って、施策名ではなくゴールから入り直した</p>
+    <div class="flow" style="gap:12px">
+      <div class="flow-step">
+        <div class="flow-num">01</div>
+        <div class="flow-label">ゴール設定</div>
+        <div class="flow-desc">いつ・何のテーマが持ち上がったか。達成状態は何か</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">02</div>
+        <div class="flow-label">課題の構造化</div>
+        <div class="flow-desc">犯人探しでなく構造探し。問題と課題を分ける</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">03</div>
+        <div class="flow-label">論点設定</div>
+        <div class="flow-desc">8つの成功条件チェックリストで施策を検証</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">04</div>
+        <div class="flow-label">施策の絞り込み</div>
+        <div class="flow-desc">ゴール→論点→打ち手を行き来しながら精度を高める</div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:28px">
+      スキルが最も警戒する失敗：「施策名から入ること」「論点なしに全部やってみましょうになること」
+    </div>
+  </div>
+
+  <!-- SLIDE 4: 課題の構造 -->
+  <div class="slide" data-slide="4">
+    <div class="step-label">ステップ02 — 課題の構造化</div>
+    <h2 class="slide-title">「育成が大変」の正体を<br>三層で分解する</h2>
+    <div class="cols cols-3" style="flex:1">
+      <div class="card gap">
+        <div class="card-label blue">データと体感のギャップ</div>
+        <div class="card-title">客観数値は<br>厳しくない</div>
+        <ul class="body-list" style="margin-top:8px">
+          <li>過去10年のデータ分析で、シニアD対チーム比率は実は厳しくない</li>
+          <li>しかし現場の体感は「育成できる人がいない」</li>
+          <li>このギャップが課題の入口</li>
+        </ul>
+      </div>
+      <div class="card problem">
+        <div class="card-label red">本質的な負荷（仮説）</div>
+        <div class="card-title">「育成が大変」の<br>具体的な正体</div>
+        <ul class="body-list" style="margin-top:8px">
+          <li>新人に任せる仕事を<strong>見繕う</strong>負荷（初期・一回的）</li>
+          <li>新人の進捗を<strong>見る</strong>負荷（継続的・より重い）</li>
+          <li>半年〜1年規模のシビアなクライアント案件が中心のため、業務切り出し自体が困難</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-label">三層の職位構造</div>
+        <div class="card-title">「リーダー」の<br>解像度を上げる</div>
+        <ul class="body-list" style="margin-top:8px">
+          <li><span class="tag tag-accent">チーフD</span>採否の決定権</li>
+          <li><span class="tag tag-blue">シニアD</span>面接実務・現場全体</li>
+          <li><span class="tag tag-red">中堅D</span>新人ADの日常フォロー（最重負荷）</li>
+        </ul>
+        <div class="highlight-box" style="margin-top:12px; font-size:12px">
+          仮説：中堅Dの疲弊をチーフ・シニアが見て、採用に慎重になっている伝播構造がある
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: 論点チェック -->
+  <div class="slide" data-slide="5">
+    <div class="step-label">ステップ03 — 論点設定</div>
+    <h2 class="slide-title">契約社員化オーダーを<br>8論点で検証する</h2>
+    <table style="flex:1">
+      <thead>
+        <tr>
+          <th style="width:28%">論点</th>
+          <th style="width:36%">効く可能性がある点</th>
+          <th style="width:36%">効かない可能性が高い点</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>③ 課題と打ち手の整合</strong><br><span style="color:var(--gray);font-size:11px">「本当にこれで解決できる？」</span></td>
+          <td>正社員への不可逆性の恐れを形式上は緩和できる</td>
+          <td style="color:var(--red)">育成の継続的負荷（進捗を見る）には直接効かない</td>
+        </tr>
+        <tr>
+          <td><strong>④ 投資対効果</strong><br><span style="color:var(--gray);font-size:11px">「そこまでしてやる意味ある？」</span></td>
+          <td>エディター制度が既存するため、制度設計の難易度は低い</td>
+          <td style="color:var(--red)">本質課題が未解決なら、効果は薄い</td>
+        </tr>
+        <tr>
+          <td><strong>⑦ 変化のイメージ</strong><br><span style="color:var(--gray);font-size:11px">「これで本当に変わる？」</span></td>
+          <td>未経験若手への入口として採用ターゲット拡張になる</td>
+          <td style="color:var(--red)">「更新しない」判断ができる文化がなければ、現場の恐れは実質変わらない</td>
+        </tr>
+        <tr>
+          <td><strong>⑧ 過去の経緯</strong><br><span style="color:var(--gray);font-size:11px">「あの件を踏まえてる？」</span></td>
+          <td colspan="2">中間層育成研修を過去に実施したが効果は限定的。「スキル問題」ではなく「物理的な時間・負荷の問題」だった可能性が高い</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SLIDE 6: 因果ループ変数 -->
+  <div class="slide" data-slide="6">
+    <div class="step-label">ステップ02深堀り — 課題の構造（因果ループ）</div>
+    <h2 class="slide-title">悪循環を生む変数を<br>整理する（作業中）</h2>
+    <p class="slide-sub">ループ図の完成に向けて、因果関係を持つ変数を特定した段階</p>
+    <div class="loop-wrap">
+      <div class="loop-node problem">
+        <div class="loop-node-num">変数①②</div>
+        <div class="loop-node-title">シニアの人数（客観）vs<br>育成できる人材の余裕感（主観）</div>
+        <div class="loop-node-sub">データと体感のギャップ。研修が効かなかった理由もここにある</div>
+      </div>
+      <div class="loop-node problem">
+        <div class="loop-node-num">変数③④</div>
+        <div class="loop-node-title">仕事を見繕う負荷（初期）<br>進捗を見る負荷（継続・重い）</div>
+        <div class="loop-node-sub">中堅Dが実際に背負っている二種の具体的負荷</div>
+      </div>
+      <div class="loop-node problem">
+        <div class="loop-node-num">変数⑤⑥</div>
+        <div class="loop-node-title">中堅Dの疲弊度<br>→チーフ・シニアの採用への懸念</div>
+        <div class="loop-node-sub">直接の負荷者（中堅D）と意思決定者（チーフ・シニア）が異なる</div>
+      </div>
+      <div class="loop-node problem">
+        <div class="loop-node-num">変数⑦⑧</div>
+        <div class="loop-node-title">採用できるという確信の低さ<br>→面接への前向きさの低さ</div>
+        <div class="loop-node-sub">これが「面接拒否」という観察可能な行動として現れている</div>
+      </div>
+      <div class="loop-node gap">
+        <div class="loop-node-num">変数⑨⑩</div>
+        <div class="loop-node-title">HRが本音を把握できている度合い<br>現場がHRに話せる安心感</div>
+        <div class="loop-node-sub">二つの変数が相互に強め合う。これが断絶ループを形成している</div>
+      </div>
+      <div class="loop-node intervention">
+        <div class="loop-node-num">→介入点</div>
+        <div class="loop-node-title">変数⑨⑩を動かすことが<br>断絶ループへの楔</div>
+        <div class="loop-node-sub">制度より先に、対話の質と安心感の設計が必要</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: 施策の方向性 -->
+  <div class="slide" data-slide="7">
+    <div class="step-label">ステップ04 — 施策の絞り込み</div>
+    <h2 class="slide-title">三つの介入方向性と<br>時間軸</h2>
+    <div class="cols cols-3" style="flex:1">
+      <div class="card accent-border">
+        <div class="card-label accent">短期 — 下期末まで</div>
+        <div class="card-title">A. 面接プール構想</div>
+        <ul class="body-list" style="margin-top:10px">
+          <li>「面接＝採用確約」→「面接＝タレントプール」にリフレーミング</li>
+          <li>潜在層・未転職検討層との接点づくり</li>
+          <li>お互いの「思ったより良さそう」を育てる</li>
+        </ul>
+        <div style="margin-top:14px">
+          <span class="tag tag-red">課題</span>
+          <span style="font-size:12px;color:var(--gray)">候補者DBの整備が前提。BambooHRでは一覧把握が困難なためNotion等での補完が必要</span>
+        </div>
+      </div>
+      <div class="card blue-border">
+        <div class="card-label blue">中期 — 半年以内</div>
+        <div class="card-title">B. 種火探しの対話</div>
+        <ul class="body-list" style="margin-top:10px">
+          <li>信頼関係が築けそうなリーダー1名から始める個別対話</li>
+          <li>データを材料に「なぜ育成が大変か」を一緒に言語化</li>
+          <li>AInqの問いで「うまくいった育成事例」を引き出す</li>
+        </ul>
+        <div style="margin-top:14px">
+          <span class="tag tag-red">課題</span>
+          <span style="font-size:12px;color:var(--gray)">想定リーダーは慎重・現実派。本音をポジティブに加工されることへの警戒あり</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">長期 — 年末〜来年</div>
+        <div class="card-title">C. HRアワード的企画</div>
+        <ul class="body-list" style="margin-top:10px">
+          <li>「自分を成長させてくれたリーダー」をディレクター陣全体で投票</li>
+          <li>得票者の育成ストーリーを本人の言葉で語ってもらう</li>
+          <li>AInqの精神で「できていること」を組織に伝播させる</li>
+        </ul>
+        <div style="margin-top:14px">
+          <span class="tag tag-accent">期待効果</span>
+          <span style="font-size:12px;color:var(--gray)">HRとリーダーの関係構築と、育成文化の可視化を同時に狙う</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: スキルを使って留意できた点・次のアクション -->
+  <div class="slide" data-slide="8">
+    <div class="step-label">振り返りと次のアクション</div>
+    <h2 class="slide-title">スキルを使って<br>留意できたこと・次にやること</h2>
+    <div class="cols cols-2" style="flex:1">
+      <div class="card green-border">
+        <div class="card-label green">スキルを使って留意できた点</div>
+        <ul class="body-list" style="margin-top:12px">
+          <li>「契約社員化」というオーダーをそのまま実行せず、本質ゴールに立ち返ることができた</li>
+          <li>「育成が大変」という漠然とした言葉を、「進捗を見る継続負荷」という具体的な変数に分解できた</li>
+          <li>「リーダー」という括りを三層に解像度を上げ、負荷の実態保有者（中堅D）と意思決定者（チーフ・シニア）が異なることに気づけた</li>
+          <li>データと体感のギャップに注目することで、過去の研修失敗の理由も再解釈できた</li>
+          <li>確証バイアスへの警戒として、仮説と事実を区別して記録できた</li>
+        </ul>
+      </div>
+      <div class="card accent-border">
+        <div class="card-label accent">次にやること</div>
+        <ol class="next-list">
+          <li>
+            <span class="next-num">01</span>
+            <span>課題仮説の検証：現場リーダーへの直接ヒアリングを行うか、方法を設計する</span>
+          </li>
+          <li>
+            <span class="next-num">02</span>
+            <span>候補者DB（Notion等）の設計：面接プール構想の前提条件を整える</span>
+          </li>
+          <li>
+            <span class="next-num">03</span>
+            <span>信頼できるリーダー1名との対話設計：入り方・問いの順序・安心感の担保</span>
+          </li>
+          <li>
+            <span class="next-num">04</span>
+            <span>契約社員制度の出口戦略を検討：正社員登用・独立支援・更新継続のどれをメインにするか</span>
+          </li>
+          <li>
+            <span class="next-num">05</span>
+            <span>因果ループ図の完成：11変数の因果関係を図として可視化し介入点を確定させる</span>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn" onclick="prevSlide()">← 前へ</button>
+  <span class="nav-count" id="navCount">1 / 8</span>
+  <button class="nav-btn" onclick="nextSlide()">次へ →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    document.getElementById('navCount').textContent = `${current + 1} / ${total}`;
+    document.getElementById('progressFill').style.width = `${((current + 1) / total) * 100}%`;
+  }
+
+  function nextSlide() { showSlide(current + 1); }
+  function prevSlide() { showSlide(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') nextSlide();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+  });
+
+  showSlide(0);
+</script>
+</body>
+</html>
